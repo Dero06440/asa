@@ -20,6 +20,7 @@ $error = '';
 $destinataire = [
     'id' => 0,
     'nom' => '',
+    'categorie' => '',
     'adresse_1' => '',
     'adresse_2' => '',
     'code_postal' => '',
@@ -53,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $fields = [
         'nom' => trim($_POST['nom'] ?? ''),
+        'categorie' => trim($_POST['categorie'] ?? ''),
         'adresse_1' => trim($_POST['adresse_1'] ?? ''),
         'adresse_2' => trim($_POST['adresse_2'] ?? ''),
         'code_postal' => trim($_POST['code_postal'] ?? ''),
@@ -68,9 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'L email n est pas valide.';
     } else {
         if ($isNew) {
-            $stmt = $db->prepare('INSERT INTO destinataires (nom, adresse_1, adresse_2, code_postal, ville, telephone, email, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt = $db->prepare('INSERT INTO destinataires (nom, categorie, adresse_1, adresse_2, code_postal, ville, telephone, email, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $stmt->execute([
                 $fields['nom'],
+                $fields['categorie'],
                 $fields['adresse_1'],
                 $fields['adresse_2'],
                 $fields['code_postal'],
@@ -82,9 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             logAction('create_destinataire', 'Destinataire cree : ' . $fields['nom']);
             flashSet('success', 'Destinataire cree.');
         } else {
-            $stmt = $db->prepare('UPDATE destinataires SET nom=?, adresse_1=?, adresse_2=?, code_postal=?, ville=?, telephone=?, email=?, notes=? WHERE id=?');
+            $stmt = $db->prepare('UPDATE destinataires SET nom=?, categorie=?, adresse_1=?, adresse_2=?, code_postal=?, ville=?, telephone=?, email=?, notes=? WHERE id=?');
             $stmt->execute([
                 $fields['nom'],
+                $fields['categorie'],
                 $fields['adresse_1'],
                 $fields['adresse_2'],
                 $fields['code_postal'],
@@ -152,6 +156,10 @@ $pageTitle = $isNew ? 'Nouveau destinataire' : 'Modifier : ' . $destinataire['no
           <div class="col-12">
             <label class="form-label fw-medium">Nom *</label>
             <input type="text" name="nom" class="form-control" required value="<?= h($destinataire['nom']) ?>">
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-medium">Categorie</label>
+            <input type="text" name="categorie" class="form-control" value="<?= h($destinataire['categorie']) ?>">
           </div>
           <div class="col-12 col-md-6">
             <label class="form-label fw-medium">Adresse 1</label>

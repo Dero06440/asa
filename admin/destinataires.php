@@ -32,18 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 }
 
 $search = trim((string) ($_GET['q'] ?? ''));
+$categorie = trim((string) ($_GET['categorie'] ?? ''));
 $params = [];
-$whereSql = '';
+$where = [];
 if ($search !== '') {
-    $whereSql = 'WHERE nom LIKE ? OR adresse_1 LIKE ? OR adresse_2 LIKE ? OR ville LIKE ? OR email LIKE ? OR telephone LIKE ?';
+    $where[] = '(nom LIKE ? OR adresse_1 LIKE ? OR adresse_2 LIKE ? OR ville LIKE ? OR email LIKE ? OR telephone LIKE ?)';
     for ($i = 0; $i < 6; $i++) {
         $params[] = '%' . $search . '%';
     }
 }
+if ($categorie !== '') {
+    $where[] = 'categorie = ?';
+    $params[] = $categorie;
+}
+
+$whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
 $stmt = $db->prepare("SELECT * FROM destinataires $whereSql ORDER BY nom ASC, ville ASC");
 $stmt->execute($params);
 $destinataires = $stmt->fetchAll();
+$categories = $db->query("SELECT DISTINCT categorie FROM destinataires WHERE categorie IS NOT NULL AND TRIM(categorie) <> '' ORDER BY categorie ASC")->fetchAll(PDO::FETCH_COLUMN);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -87,9 +95,18 @@ $destinataires = $stmt->fetchAll();
         <div class="col-12 col-md-6">
           <input type="text" name="q" class="form-control form-control-sm" placeholder="Rechercher nom, adresse, ville, email, telephone..." value="<?= h($search) ?>">
         </div>
+        <div class="col-12 col-md-3">
+          <select name="categorie" class="form-select form-select-sm">
+            <option value="">Toutes les categories</option>
+            <?php foreach ($categories as $cat): ?>
+              <option value="<?= h($cat) ?>" <?= $categorie === $cat ? 'selected' : '' ?>><?= h($cat) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
         <div class="col-12 col-md-auto d-flex gap-2">
           <button type="submit" class="btn btn-success btn-sm">Filtrer</button>
-          <?php if ($search !== ''): ?>
+          <a href="<?= BASE_URL ?>/admin/print_destinataires.php?q=<?= urlencode($search) ?>&categorie=<?= urlencode($categorie) ?>" class="btn btn-outline-success btn-sm" target="_blank" rel="noopener">Enveloppes</a>
+          <?php if ($search !== '' || $categorie !== ''): ?>
             <a href="<?= BASE_URL ?>/admin/destinataires.php" class="btn btn-outline-secondary btn-sm">Effacer</a>
           <?php endif; ?>
         </div>
@@ -103,6 +120,7 @@ $destinataires = $stmt->fetchAll();
         <thead class="table-success">
           <tr>
             <th>Nom</th>
+            <th>Categorie</th>
             <th>Adresse</th>
             <th>Contact</th>
             <th class="text-center">Actions</th>
@@ -110,11 +128,12 @@ $destinataires = $stmt->fetchAll();
         </thead>
         <tbody>
           <?php if (empty($destinataires)): ?>
-            <tr><td colspan="4" class="text-center text-muted py-4">Aucun destinataire.</td></tr>
+            <tr><td colspan="5" class="text-center text-muted py-4">Aucun destinataire.</td></tr>
           <?php endif; ?>
           <?php foreach ($destinataires as $d): ?>
             <tr>
               <td class="fw-medium"><?= h($d['nom']) ?></td>
+              <td class="small text-muted"><?= h($d['categorie'] ?? '') ?></td>
               <td class="small text-muted">
                 <?= h($d['adresse_1'] ?? '') ?>
                 <?php if (!empty($d['adresse_2'])): ?><br><?= h($d['adresse_2']) ?><?php endif; ?>

@@ -219,10 +219,10 @@ function sortIndicator(string $column, string $currentSort, string $currentDir):
           <?php foreach ($arrosants as $a): ?>
           <tr>
             <td>
-              <span class="fw-medium"><?= h($a['nom']) ?></span>
               <?php if ($a['civilite']): ?>
-                <small class="text-muted d-block"><?= h($a['civilite']) ?></small>
+                <span class="text-muted"><?= h($a['civilite']) ?></span>
               <?php endif; ?>
+              <span class="fw-medium"><?= h($a['nom']) ?></span>
             </td>
             <td class="d-none d-md-table-cell small text-muted">
               <?= h($a['rue'] ?? '') ?>

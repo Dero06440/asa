@@ -185,6 +185,7 @@ CREATE TABLE IF NOT EXISTS `sessions_log` (
 CREATE TABLE IF NOT EXISTS `destinataires` (
     `id`          INT AUTO_INCREMENT PRIMARY KEY,
     `nom`         VARCHAR(200) NOT NULL,
+    `categorie`   VARCHAR(100) DEFAULT NULL,
     `adresse_1`   VARCHAR(250) DEFAULT NULL,
     `adresse_2`   VARCHAR(250) DEFAULT NULL,
     `code_postal` VARCHAR(10) DEFAULT NULL,
@@ -194,7 +195,8 @@ CREATE TABLE IF NOT EXISTS `destinataires` (
     `notes`       TEXT DEFAULT NULL,
     `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX `idx_nom` (`nom`)
+    INDEX `idx_nom` (`nom`),
+    INDEX `idx_categorie` (`categorie`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `app_settings` (
