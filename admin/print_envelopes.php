@@ -54,6 +54,16 @@ function envelopeFontSizeForLines(array $lines, float $targetWidthMm): float
     return max(10.0, min(14.0, $estimatedPt));
 }
 
+function envelopeSenderLines(): array
+{
+    return [
+        'A.S.A.',
+        'Arrosants et Riverains du Paillon',
+        '672 Avenue Hôtel de Ville',
+        '06440 PEILLON',
+    ];
+}
+
 $db = getDB();
 $stmt = $db->query(
     "SELECT civilite, nom, rue, adresse2, code_postal, ville
@@ -82,10 +92,13 @@ foreach ($rows as $row) {
         continue;
     }
 
+    $senderLines = envelopeSenderLines();
     $fontSize = envelopeFontSizeForLines($lines, 65);
     $lineHeight = 10 * 72 / 25.4;
 
     $pdf->addPage();
+    $pdf->setFontSize(9, 4.8 * 72 / 25.4);
+    $pdf->textBlock(34, 15, $senderLines);
     $pdf->setFontSize($fontSize, $lineHeight);
     $pdf->textBlock(130, 65, $lines);
 }

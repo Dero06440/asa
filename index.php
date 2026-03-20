@@ -17,6 +17,12 @@ $puisant  = trim($_GET['puisant'] ?? '');
 $sort     = trim($_GET['sort'] ?? 'nom');
 $dir      = strtolower(trim($_GET['dir'] ?? 'asc'));
 
+$selectionLabel = match ($puisant) {
+    '0' => 'Arrosants',
+    '1' => 'Puisants',
+    default => 'Arrosants et Puisants',
+};
+
 $sortMap = [
     'nom' => 'a.nom',
     'adresse' => 'a.rue',
@@ -114,7 +120,10 @@ function sortIndicator(string $column, string $currentSort, string $currentDir):
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
   <div class="container-fluid">
     <div class="d-flex align-items-center gap-3">
-      <a class="navbar-brand fw-bold mb-0" href="<?= BASE_URL ?>/index.php">ASA Arrosants et Riverains du Paillon</a>
+      <a class="navbar-brand fw-bold mb-0 navbar-brand-branding" href="<?= BASE_URL ?>/index.php">
+        <img src="<?= BASE_URL ?>/assets/img/peillon-blason.svg" alt="Blason de Peillon" class="navbar-brand-logo">
+        <span class="navbar-brand-text">ASA Arrosants et Riverains du Paillon</span>
+      </a>
       <a href="<?= BASE_URL ?>/index.php" class="text-white text-decoration-none small">Liste</a>
       <?php if (hasRole('editeur')): ?>
         <a href="<?= BASE_URL ?>/admin/print.php" class="text-white text-decoration-none small">Imprimer</a>
@@ -135,7 +144,7 @@ function sortIndicator(string $column, string $currentSort, string $currentDir):
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <h2 class="h5 mb-0 fw-bold">Liste des Arrosants</h2>
     <div class="d-flex gap-2 flex-wrap">
-      <span class="badge bg-success fs-6"><?= $total ?> arrosant<?= $total > 1 ? 's' : '' ?></span>
+      <span class="badge bg-success fs-6"><?= $total ?> <?= h(mb_strtolower($selectionLabel)) ?></span>
       <span class="badge bg-secondary fs-6"><?= euros($totalCotisations) ?></span>
       <span class="badge bg-warning text-dark fs-6"><?= euros($totalCotisationsSimul) ?></span>
     </div>
@@ -165,9 +174,9 @@ function sortIndicator(string $column, string $currentSort, string $currentDir):
         </div>
         <div class="col-6 col-sm-3 col-lg-2">
           <select name="puisant" class="form-select form-select-sm">
-            <option value="">Tous puisants</option>
-            <option value="1" <?= $puisant === '1' ? 'selected' : '' ?>>Oui</option>
-            <option value="0" <?= $puisant === '0' ? 'selected' : '' ?>>Non</option>
+            <option value="">Arrosants et Puisants</option>
+            <option value="0" <?= $puisant === '0' ? 'selected' : '' ?>>Arrosants</option>
+            <option value="1" <?= $puisant === '1' ? 'selected' : '' ?>>Puisants</option>
           </select>
         </div>
         <div class="col-12 col-lg-auto d-flex gap-2">

@@ -74,7 +74,10 @@ $roles = ['lecteur' => 'Lecteur', 'editeur' => 'Editeur', 'admin' => 'Admin'];
 <nav class="navbar navbar-dark bg-success">
   <div class="container-fluid">
     <div class="d-flex align-items-center gap-3">
-      <a class="navbar-brand fw-bold mb-0" href="<?= BASE_URL ?>/index.php">ASA Arrosants et Riverains du Paillon</a>
+      <a class="navbar-brand fw-bold mb-0 navbar-brand-branding" href="<?= BASE_URL ?>/index.php">
+        <img src="<?= BASE_URL ?>/assets/img/peillon-blason.svg" alt="Blason de Peillon" class="navbar-brand-logo">
+        <span class="navbar-brand-text">ASA Arrosants et Riverains du Paillon</span>
+      </a>
       <a href="<?= BASE_URL ?>/index.php" class="text-white text-decoration-none small">Liste</a>
       <a href="<?= BASE_URL ?>/admin/print.php" class="text-white text-decoration-none small">Imprimer</a>
       <a href="<?= BASE_URL ?>/admin/tarifs.php" class="text-white text-decoration-none small">Tarifs</a>

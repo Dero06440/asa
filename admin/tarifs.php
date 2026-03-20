@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $ratio = (float) $numericPercentage / 100;
         $stmt = $db->prepare('UPDATE tarifs SET tarif_simul = ROUND(tarif * ?, 2) WHERE m2 > 0');
         $stmt->execute([$ratio]);
-        $stmtPuisant = $db->prepare('UPDATE tarifs SET tarif = ?, tarif_simul = ? WHERE m2 = 0');
-        $stmtPuisant->execute([$numericPuisantAmount, $numericPuisantAmount]);
+        $stmtPuisant = $db->prepare('UPDATE tarifs SET tarif = ?, tarif_simul = ROUND(? * ?, 2) WHERE m2 = 0');
+        $stmtPuisant->execute([$numericPuisantAmount, $numericPuisantAmount, $ratio]);
         $stmtSetting = $db->prepare('INSERT INTO app_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)');
         $stmtSetting->execute(['simulation_percentage', $numericPercentage]);
         logAction('tarifs_simul', 'Pourcentage applique : ' . $numericPercentage . '%');
@@ -59,7 +59,10 @@ $puisantAmount = $puisantAmount !== '' ? $puisantAmount : (string) $puisantTarif
 <nav class="navbar navbar-dark bg-success">
   <div class="container-fluid">
     <div class="d-flex align-items-center gap-3">
-      <a class="navbar-brand fw-bold mb-0" href="<?= BASE_URL ?>/index.php">ASA Arrosants et Riverains du Paillon</a>
+      <a class="navbar-brand fw-bold mb-0 navbar-brand-branding" href="<?= BASE_URL ?>/index.php">
+        <img src="<?= BASE_URL ?>/assets/img/peillon-blason.svg" alt="Blason de Peillon" class="navbar-brand-logo">
+        <span class="navbar-brand-text">ASA Arrosants et Riverains du Paillon</span>
+      </a>
       <a href="<?= BASE_URL ?>/index.php" class="text-white text-decoration-none small">Liste</a>
       <a href="<?= BASE_URL ?>/admin/print.php" class="text-white text-decoration-none small">Imprimer</a>
       <a href="<?= BASE_URL ?>/admin/tarifs.php" class="text-white text-decoration-none small">Tarifs</a>
@@ -87,7 +90,6 @@ $puisantAmount = $puisantAmount !== '' ? $puisantAmount : (string) $puisantTarif
         <div class="col-12 col-md-4">
           <label for="pourcentage" class="form-label fw-medium">Pourcentage de simulation</label>
           <input type="number" step="0.01" min="0" name="pourcentage" id="pourcentage" class="form-control" value="<?= h($percentage) ?>" placeholder="ex: 40">
-          <div class="form-text">Cette valeur est memorisee et rechargee automatiquement.</div>
         </div>
         <div class="col-12 col-md-4">
           <label for="cotisation_puisant" class="form-label fw-medium">Cotisation puisant</label>
@@ -97,7 +99,6 @@ $puisantAmount = $puisantAmount !== '' ? $puisantAmount : (string) $puisantTarif
           <button type="submit" class="btn btn-success">Appliquer</button>
         </div>
       </form>
-      <p class="small text-muted mt-3 mb-0">La simulation applique <code>tarif_simul = tarif * pourcentage / 100</code>. La cotisation puisant est un montant fixe sans surface.</p>
     </div>
   </div>
 
