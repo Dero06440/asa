@@ -1,0 +1,29 @@
+# ASA Paillon — Règles de sécurité Apache
+
+# Encodage UTF-8
+AddDefaultCharset UTF-8
+
+# Interdire l'accès direct au dossier lib/ et includes/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Bloquer l'accès direct aux dossiers sensibles
+    RewriteRule ^(includes|lib|admin/includes)/ - [F,L]
+</IfModule>
+
+# Interdire l'accès direct à config.php
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Interdire la navigation dans les répertoires
+Options -Indexes
+
+# Sécurité en-têtes HTTP
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

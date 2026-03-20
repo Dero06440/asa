@@ -1,0 +1,22 @@
+INSTALLATION DE PHPMAILER
+========================
+
+PHPMailer n'est pas inclus automatiquement pour des raisons de taille.
+Suivez ces étapes pour l'installer :
+
+MÉTHODE SIMPLE (sans Composer) :
+---------------------------------
+1. Télécharger PHPMailer 6.x :
+   https://github.com/PHPMailer/PHPMailer/archive/refs/heads/master.zip
+
+2. Extraire l'archive
+
+3. Copier UNIQUEMENT ces 3 fichiers dans ce dossier (lib/phpmailer/) :
+   - src/PHPMailer.php  → lib/phpmailer/PHPMailer.php
+   - src/SMTP.php       → lib/phpmailer/SMTP.php
+   - src/Exception.php  → lib/phpmailer/Exception.php
+
+4. C'est tout ! Le projet est prêt.
+
+Note : Les fichiers doivent être directement dans lib/phpmailer/,
+pas dans un sous-dossier src/.

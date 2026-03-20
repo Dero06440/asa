@@ -1,0 +1,2 @@
+ALTER TABLE `arrosants`
+    ADD COLUMN `adresse2` VARCHAR(250) DEFAULT NULL AFTER `rue`;
