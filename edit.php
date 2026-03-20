@@ -206,7 +206,7 @@ $lastSeenUpdate = !empty($a['updated_at']) ? substr((string) $a['updated_at'], 0
             <label class="form-label fw-medium mb-1">Civilite</label>
             <select name="civilite" class="form-select form-select-sm">
               <option value="">-</option>
-              <?php foreach (['M.','Mme','M. Mme','M.Mme','Mme.'] as $civ): ?>
+              <?php foreach (['M', 'Mme', 'M Mme'] as $civ): ?>
                 <option value="<?= h($civ) ?>" <?= $a['civilite'] === $civ ? 'selected' : '' ?>><?= h($civ) ?></option>
               <?php endforeach; ?>
             </select>
