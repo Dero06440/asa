@@ -1,7 +1,7 @@
 <?php
-// Échappe une valeur pour l'affichage HTML
+// Echappe une valeur pour l'affichage HTML
 function h(?string $str): string {
-    return htmlspecialchars((string)$str, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string) $str, ENT_QUOTES, 'UTF-8');
 }
 
 // Formate un montant en euros
@@ -25,7 +25,7 @@ function dateFR(?string $date): string {
 
 // Pagination : retourne le numéro de page courant
 function currentPage(): int {
-    return max(1, (int)($_GET['page'] ?? 1));
+    return max(1, (int) ($_GET['page'] ?? 1));
 }
 
 // Génère les paramètres GET actuels sans 'page' (pour les liens de pagination)
@@ -55,4 +55,10 @@ function flashRender(): string {
          . $icon . ' ' . h($flash['message'])
          . '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>'
          . '</div>';
+}
+
+function tableExists(PDO $db, string $tableName): bool {
+    $stmt = $db->prepare('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?');
+    $stmt->execute([$tableName]);
+    return (int) $stmt->fetchColumn() > 0;
 }

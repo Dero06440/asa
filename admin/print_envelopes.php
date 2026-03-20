@@ -2,67 +2,9 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/simple_pdf.php';
+require_once __DIR__ . '/../includes/envelopes.php';
 
 requireRole('editeur');
-
-function envelopeRecipientLines(array $row): array
-{
-    $lines = [];
-
-    $name = trim(implode(' ', array_filter([
-        trim((string) ($row['civilite'] ?? '')),
-        trim((string) ($row['nom'] ?? '')),
-    ])));
-    if ($name !== '') {
-        $lines[] = $name;
-    }
-
-    $rue = trim((string) ($row['rue'] ?? ''));
-    if ($rue !== '') {
-        $lines[] = $rue;
-    }
-
-    $adresse2 = trim((string) ($row['adresse2'] ?? ''));
-    if ($adresse2 !== '') {
-        $lines[] = $adresse2;
-    }
-
-    $cityLine = trim(
-        trim((string) ($row['code_postal'] ?? '')) . ' ' . trim((string) ($row['ville'] ?? ''))
-    );
-    if ($cityLine !== '') {
-        $lines[] = strtoupper($cityLine);
-    }
-
-    return $lines;
-}
-
-function envelopeFontSizeForLines(array $lines, float $targetWidthMm): float
-{
-    $maxChars = 1;
-    foreach ($lines as $line) {
-        $length = mb_strlen((string) $line, 'UTF-8');
-        if ($length > $maxChars) {
-            $maxChars = $length;
-        }
-    }
-
-    $targetWidthPt = $targetWidthMm * 72 / 25.4;
-    $estimatedPt = $targetWidthPt / max($maxChars * 0.52, 1);
-
-    return max(10.0, min(14.0, $estimatedPt));
-}
-
-function envelopeSenderLines(): array
-{
-    return [
-        'A.S.A.',
-        'Arrosants et Riverains du Paillon',
-        '672 Avenue Hôtel de Ville',
-        '06440 PEILLON',
-    ];
-}
 
 $db = getDB();
 $stmt = $db->query(
@@ -87,20 +29,12 @@ if (empty($rows)) {
 $pdf = new SimplePdfDocument(220, 110);
 
 foreach ($rows as $row) {
-    $lines = envelopeRecipientLines($row);
+    $lines = envelopeAddressLines($row);
     if (empty($lines)) {
         continue;
     }
 
-    $senderLines = envelopeSenderLines();
-    $fontSize = envelopeFontSizeForLines($lines, 65);
-    $lineHeight = 10 * 72 / 25.4;
-
-    $pdf->addPage();
-    $pdf->setFontSize(9, 4.8 * 72 / 25.4);
-    $pdf->textBlock(34, 15, $senderLines);
-    $pdf->setFontSize($fontSize, $lineHeight);
-    $pdf->textBlock(130, 65, $lines);
+    renderEnvelopePage($pdf, $lines);
 }
 
 logAction('print_envelopes', count($rows) . ' enveloppes generees');

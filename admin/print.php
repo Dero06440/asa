@@ -7,6 +7,7 @@ require_once __DIR__ . '/../includes/functions.php';
 requireRole('editeur');
 
 $db = getDB();
+$hasDestinatairesTable = tableExists($db, 'destinataires');
 $totalWithAddress = (int) $db->query(
     "SELECT COUNT(*) FROM arrosants
      WHERE actif = 1
@@ -15,6 +16,13 @@ $totalWithAddress = (int) $db->query(
        AND code_postal IS NOT NULL AND TRIM(code_postal) <> ''
        AND ville IS NOT NULL AND TRIM(ville) <> ''"
 )->fetchColumn();
+$totalDestinataires = $hasDestinatairesTable ? (int) $db->query(
+    "SELECT COUNT(*) FROM destinataires
+     WHERE nom <> ''
+       AND adresse_1 IS NOT NULL AND TRIM(adresse_1) <> ''
+       AND code_postal IS NOT NULL AND TRIM(code_postal) <> ''
+       AND ville IS NOT NULL AND TRIM(ville) <> ''"
+)->fetchColumn() : 0;
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -61,6 +69,25 @@ $totalWithAddress = (int) $db->query(
             destinataire<?= $totalWithAddress > 1 ? 's' : '' ?> imprimable<?= $totalWithAddress > 1 ? 's' : '' ?>
           </p>
           <a href="<?= BASE_URL ?>/admin/print_envelopes.php" class="btn btn-success" target="_blank" rel="noopener">Generer le PDF</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-2">Destinataires externes</h5>
+          <p class="card-text text-muted small mb-3">
+            Gere les adresses hors association et imprime une enveloppe unitaire pour chaque fiche.
+          </p>
+          <?php if ($hasDestinatairesTable): ?>
+            <p class="small mb-3">
+              <span class="badge bg-success"><?= $totalDestinataires ?></span>
+              destinataire<?= $totalDestinataires > 1 ? 's' : '' ?> imprimable<?= $totalDestinataires > 1 ? 's' : '' ?>
+            </p>
+            <a href="<?= BASE_URL ?>/admin/destinataires.php" class="btn btn-outline-success">Ouvrir le carnet</a>
+          <?php else: ?>
+            <p class="small text-muted mb-0">Appliquer migrate_destinataires.sql pour activer ce module.</p>
+          <?php endif; ?>
         </div>
       </div>
     </div>

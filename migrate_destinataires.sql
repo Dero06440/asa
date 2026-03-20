@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS `destinataires` (
+    `id`          INT AUTO_INCREMENT PRIMARY KEY,
+    `nom`         VARCHAR(200) NOT NULL,
+    `adresse_1`   VARCHAR(250) DEFAULT NULL,
+    `adresse_2`   VARCHAR(250) DEFAULT NULL,
+    `code_postal` VARCHAR(10) DEFAULT NULL,
+    `ville`       VARCHAR(100) DEFAULT NULL,
+    `telephone`   VARCHAR(30) DEFAULT NULL,
+    `email`       VARCHAR(200) DEFAULT NULL,
+    `notes`       TEXT DEFAULT NULL,
+    `created_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_nom` (`nom`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

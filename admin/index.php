@@ -7,10 +7,12 @@ require_once __DIR__ . '/../includes/functions.php';
 requireRole('editeur');
 
 $db = getDB();
+$hasDestinatairesTable = tableExists($db, 'destinataires');
 
 $totalArrosants = (int) $db->query('SELECT COUNT(*) FROM arrosants WHERE actif=1')->fetchColumn();
 $totalCotisations = (float) $db->query('SELECT SUM(calcul_cotisation_v2(surface_m2, puisant)) FROM arrosants WHERE actif=1')->fetchColumn();
 $totalCotisationsSimul = (float) $db->query('SELECT SUM(calcul_cotisation_simul_v2(surface_m2, puisant)) FROM arrosants WHERE actif=1')->fetchColumn();
+$totalDestinataires = $hasDestinatairesTable ? (int) $db->query('SELECT COUNT(*) FROM destinataires')->fetchColumn() : 0;
 $totalUtilisateurs = hasRole('admin') ? (int) $db->query('SELECT COUNT(*) FROM utilisateurs WHERE actif=1')->fetchColumn() : 0;
 $derniersMaj = $db->query('SELECT nom, updated_at FROM arrosants WHERE actif=1 ORDER BY updated_at DESC LIMIT 5')->fetchAll();
 $derniersLogins = $db->query(
@@ -102,6 +104,14 @@ $derniersLogins = $db->query(
       </a>
     </div>
     <?php endif; ?>
+    <div class="col-12 col-md-3">
+      <a href="<?= BASE_URL ?>/admin/destinataires.php" class="card border-0 shadow-sm text-decoration-none text-dark h-100">
+        <div class="card-body">
+          <h5 class="card-title">Destinataires</h5>
+          <p class="card-text text-muted small"><?= $hasDestinatairesTable ? ($totalDestinataires . ' adresse' . ($totalDestinataires > 1 ? 's' : '') . ' externe' . ($totalDestinataires > 1 ? 's' : '')) : 'Appliquer migrate_destinataires.sql' ?></p>
+        </div>
+      </a>
+    </div>
     <div class="col-12 col-md-3">
       <a href="<?= BASE_URL ?>/admin/print.php" class="card border-0 shadow-sm text-decoration-none text-dark h-100">
         <div class="card-body">
